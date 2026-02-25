@@ -34,14 +34,14 @@ const AvatarSelector = ({ selectedAvatar, onSelect, className = "" }: AvatarSele
                 </button>
             </div>
 
-            <div className="grid grid-cols-6 sm:grid-cols-8 gap-2">
+            <div className="grid grid-cols-6 sm:grid-cols-8 gap-1.5 sm:gap-2">
                 {AVATARS.map((avatar) => (
                     <button
                         key={avatar}
                         type="button"
                         onClick={() => onSelect(avatar)}
                         className={`
-              w-10 h-10 flex items-center justify-center text-xl rounded-xl transition-all duration-200
+              w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-lg sm:text-xl rounded-xl transition-all duration-200
               ${selectedAvatar === avatar
                                 ? 'bg-primary/20 border-2 border-primary scale-110 shadow-[0_0_15px_hsl(var(--primary)/0.3)]'
                                 : 'bg-[hsl(var(--muted))] border border-[hsl(var(--border))] hover:border-primary/40 hover:bg-primary/10 hover:scale-105'

@@ -12,7 +12,10 @@ const Index = () => {
   const { user, profile } = useAuth();
 
   useEffect(() => {
-    if (user && profile) {
+    if (user && profile) {git add index.html
+git commit - m "fix: resolve vite build path for vercel"
+git push origin main
+
       navigate('/dashboard');
     }
   }, [user, profile, navigate]);

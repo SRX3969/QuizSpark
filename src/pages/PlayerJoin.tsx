@@ -60,20 +60,36 @@ const PlayerJoin = () => {
       return;
     }
 
-    const { data: player, error: playerErr } = await supabase
+    const playerData = {
+      session_id: session.id,
+      name: name.trim(),
+      score: 0,
+      avatar_url: selectedAvatar
+    };
+
+    let { data: player, error: playerErr } = await supabase
       .from('players')
-      .insert({
-        session_id: session.id,
-        name: name.trim(),
-        score: 0,
-        avatar_url: selectedAvatar
-      })
+      .insert(playerData)
       .select()
       .single();
 
+    // Fallback if avatar_url column doesn't exist (common issue if host hasn't migrated)
+    if (playerErr && playerErr.code === '42703') {
+      console.warn("Avatar column missing, falling back to basic insert");
+      const { avatar_url, ...basicPlayerData } = playerData;
+      const { data: fallbackPlayer, error: fallbackErr } = await supabase
+        .from('players')
+        .insert(basicPlayerData)
+        .select()
+        .single();
+
+      player = fallbackPlayer;
+      playerErr = fallbackErr;
+    }
+
     if (playerErr || !player) {
       console.error("Join error:", playerErr);
-      setError('Failed to join. Make sure the host has updated the database for avatars!');
+      setError('Failed to join game. Please try again.');
       setLoading(false);
       return;
     }
@@ -102,19 +118,19 @@ const PlayerJoin = () => {
       </div>
 
       <div className="relative z-50 w-full max-w-md px-4 animate-[overlay-pop_0.3s_ease]">
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-6 sm:mb-8">
           <Logo size="lg" />
         </div>
 
-        <div className="bento-card border-none ring-1 ring-primary/20 p-8 shadow-2xl">
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-[2.5rem] mb-6 animate-[neon-pulse_2s_ease-in-out_infinite] bg-gradient-to-br from-[#8B5CF6] via-[#FF3CAC] to-[#00DCFF] shadow-xl shadow-primary/30">
-              <Zap size={40} className="text-white fill-white" />
+        <div className="bento-card border-none ring-1 ring-primary/20 p-6 sm:p-8 shadow-2xl">
+          <div className="text-center mb-6 sm:mb-10">
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-[2rem] sm:rounded-[2.5rem] mb-4 sm:mb-6 animate-[neon-pulse_2s_ease-in-out_infinite] bg-gradient-to-br from-[#8B5CF6] via-[#FF3CAC] to-[#00DCFF] shadow-xl shadow-primary/30">
+              <Zap className="text-white fill-white w-8 h-8 sm:w-10 sm:h-10" />
             </div>
-            <h1 className="font-outfit text-4xl font-black mb-2 text-foreground tracking-tighter">
+            <h1 className="font-outfit text-3xl sm:text-4xl font-black mb-2 text-foreground tracking-tighter">
               Join the Storm
             </h1>
-            <p className="text-muted-foreground text-sm font-bold uppercase tracking-[0.2em] opacity-70">Enter PIN & Battle</p>
+            <p className="text-muted-foreground text-[10px] sm:text-sm font-bold uppercase tracking-[0.2em] opacity-70">Enter PIN & Battle</p>
           </div>
 
           <form onSubmit={handleJoin} className="space-y-4">
@@ -142,7 +158,7 @@ const PlayerJoin = () => {
                 value={pin}
                 onChange={handlePinChange}
                 placeholder="000000"
-                className="storm-input w-full px-4 py-4 text-center text-4xl font-outfit font-black tracking-[0.4em] text-primary"
+                className="storm-input w-full px-4 py-3 sm:py-4 text-center text-3xl sm:text-4xl font-outfit font-black tracking-[0.3em] sm:tracking-[0.4em] text-primary"
                 style={{
                   background: pin.length === 6 ? 'hsl(var(--primary) / 0.1)' : undefined,
                   boxShadow: pin.length === 6 ? '0 0 20px hsl(var(--primary) / 0.2)' : undefined,
