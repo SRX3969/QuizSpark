@@ -101,7 +101,7 @@ const PlayerJoin = () => {
         <ThemeToggle />
       </div>
 
-      <div className="relative z-10 w-full max-w-md px-4 animate-[overlay-pop_0.3s_ease]">
+      <div className="relative z-50 w-full max-w-md px-4 animate-[overlay-pop_0.3s_ease]">
         <div className="flex justify-center mb-8">
           <Logo size="lg" />
         </div>
