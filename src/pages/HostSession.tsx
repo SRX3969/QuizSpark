@@ -120,8 +120,20 @@ const HostSession = () => {
     const responseSub = supabase
       .channel(`host-responses-${sessionId}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'responses' }, async (payload) => {
-        setAnsweredCount(c => c + 1);
         const row = payload.new as { player_id: string; selected_option: number };
+        // Only count responses from players in this session
+        const isSessionPlayer = players.some(p => p.id === row.player_id);
+        if (!isSessionPlayer) {
+          // Re-check from DB in case player list is stale
+          const { data: playerCheck } = await supabase
+            .from('players')
+            .select('id')
+            .eq('id', row.player_id)
+            .eq('session_id', sessionId)
+            .single();
+          if (!playerCheck) return;
+        }
+        setAnsweredCount(c => c + 1);
         setAnswerDist(prev => ({
           ...prev,
           [row.selected_option]: (prev[row.selected_option] || 0) + 1,
@@ -131,7 +143,7 @@ const HostSession = () => {
 
     const powerupSub = supabase
       .channel(`host-powerups-${sessionId}`)
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'powerups' as any, filter: `session_id=eq.${sessionId}` }, async (payload) => {
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'powerups', filter: `session_id=eq.${sessionId}` }, async (payload) => {
         const p = payload.new as any;
         if (p.status === 'used') {
           // fetch player info to show in toast

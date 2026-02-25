@@ -231,7 +231,7 @@ const PlayerGame = () => {
   const loadGame = async (p: PlayerInfo) => {
     const { data: s } = await supabase.from('game_sessions').select('*').eq('id', sessionId).single();
     if (s) {
-      setGameSession(s as unknown as GameSession);
+      setGameSession(s as GameSession);
       const { data: qs } = await supabase.from('questions').select('*').eq('quiz_id', s.quiz_id).order('order_index');
       if (qs) setQuestions(qs as Question[]);
       if (s.status === 'question') {
@@ -290,7 +290,7 @@ const PlayerGame = () => {
 
     const powerupCh = supabase
       .channel(`powerups-target-${player.id}`)
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'powerups' as any, filter: `target_player_id=eq.${player.id}` }, (payload) => {
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'powerups', filter: `target_player_id=eq.${player.id}` }, (payload) => {
         if (payload.new.powerup_type === 'glitch' && payload.new.status === 'used') {
           setActiveDebuff('glitch');
           toast.error("You've been GLITCHED!", { icon: '🤖' });
@@ -389,14 +389,14 @@ const PlayerGame = () => {
       const types: ('50_50' | 'double_down' | 'glitch')[] = ['50_50', 'double_down', 'glitch'];
       const pt = types[Math.floor(Math.random() * types.length)];
 
-      const res = await supabase.from('powerups' as any).insert({
+      const res = await supabase.from('powerups').insert({
         session_id: gameSession.id,
         player_id: player.id,
         powerup_type: pt,
         status: 'available'
       }).select().single();
 
-      const powerupRecord = res.data as any;
+      const powerupRecord = res.data;
       if (powerupRecord && !res.error) {
         setPowerupId(powerupRecord.id);
         setAvailablePowerup(pt);
@@ -450,7 +450,7 @@ const PlayerGame = () => {
       const opponents = leaderboard.filter(p => p.id !== player.id);
       if (opponents.length > 0) {
         const target = opponents[Math.floor(Math.random() * opponents.length)];
-        await supabase.from('powerups' as any).update({
+        await supabase.from('powerups').update({
           status: 'used',
           target_player_id: target.id
         }).eq('id', powerupId);
@@ -466,7 +466,7 @@ const PlayerGame = () => {
     }
 
     // For self buffs
-    await supabase.from('powerups' as any).update({ status: 'used' }).eq('id', powerupId);
+    await supabase.from('powerups').update({ status: 'used' }).eq('id', powerupId);
 
     setAvailablePowerup(null);
     setPowerupId(null);
