@@ -177,7 +177,7 @@ const AnimatedBackground = () => {
   }, []);
 
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0 mesh-bg">
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0 mesh-bg select-none">
       {/* Neon Blobs */}
       <div
         className="blob w-[900px] h-[900px] -top-72 -left-72"

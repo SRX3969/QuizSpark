@@ -142,23 +142,23 @@ const PlayerJoin = () => {
                 onChange={e => setName(e.target.value)}
                 placeholder="Enter your name..."
                 maxLength={30}
-                className="storm-input w-full px-5 py-3.5 text-base font-semibold"
+                className="storm-input w-full px-4 sm:px-5 py-3 sm:py-3.5 text-sm sm:text-base font-semibold"
               />
             </div>
 
-            <div className="pt-2">
+            <div className="pt-1 sm:pt-2">
               <AvatarSelector selectedAvatar={selectedAvatar} onSelect={setSelectedAvatar} />
             </div>
 
             <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-1.5 ml-1">Game PIN</label>
+              <label className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-1 sm:mb-1.5 ml-1">Game PIN</label>
               <input
                 type="text"
                 inputMode="numeric"
                 value={pin}
                 onChange={handlePinChange}
                 placeholder="000000"
-                className="storm-input w-full px-4 py-3 sm:py-4 text-center text-3xl sm:text-4xl font-outfit font-black tracking-[0.3em] sm:tracking-[0.4em] text-primary"
+                className="storm-input w-full px-3 py-3 sm:py-4 text-center text-2xl sm:text-4xl font-outfit font-black tracking-[0.25em] sm:tracking-[0.4em] text-primary"
                 style={{
                   background: pin.length === 6 ? 'hsl(var(--primary) / 0.1)' : undefined,
                   boxShadow: pin.length === 6 ? '0 0 20px hsl(var(--primary) / 0.2)' : undefined,
